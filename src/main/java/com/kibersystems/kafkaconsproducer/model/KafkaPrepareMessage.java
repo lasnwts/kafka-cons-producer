@@ -38,8 +38,8 @@ public class KafkaPrepareMessage {
         return message;
     }
 
-    @Override
-    public String toString() {
+
+    public String toStringFull() {
         return "KafkaMessage{" +
                 "countMessage=" + countMessage +
                 ", topicName='" + topicName + '\'' +
@@ -47,4 +47,14 @@ public class KafkaPrepareMessage {
                 ", message='" + message + '\'' +
                 '}';
     }
+    @Override
+    public String toString() {
+        return "KafkaMessage{" +
+                "countMessage=" + countMessage +
+                ", topicName='" + topicName + '\'' +
+                ", key='" + key + '\'' +
+                ", message length='" + message.length() + '\'' +
+                '}';
+    }
+
 }

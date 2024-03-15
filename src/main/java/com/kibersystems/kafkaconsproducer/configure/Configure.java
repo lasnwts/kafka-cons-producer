@@ -30,16 +30,18 @@ public class Configure {
      * service.send.randomly=true
      */
 
-    @Value("${service.file.encoding}") //Каталог с сообщениями
+    @Value("${service.file.encoding}") //Кодировка
     private String fileEncode;
     @Value("${service.message.count:5}") //Количество сообщений
     private Integer serviceMessageCount;
     @Value("${service.catalog.messages}") //Каталог с сообщениями
     private String serviceCatalogMessages;
-    @Value("${service.message.key}") //Каталог с сообщениями
+    @Value("${service.message.key}") //Ключ
     private String serviceMessageKey;
-    @Value("${service.send.randomly:false}") //Каталог с сообщениями
-    private String serviceSendRandomly;
+    @Value("${service.send.randomly:false}") //Выбор файлов рандомно
+    private boolean serviceSendRandomly;
+    @Value("${service.topic.name:none}") //Имя топика
+    private String serviceTopicName;
 
     public String getFileEncode() {
         return fileEncode;
@@ -49,11 +51,15 @@ public class Configure {
         this.fileEncode = fileEncode;
     }
 
-    public String getServiceSendRandomly() {
+    public boolean isServiceSendRandomly() {
         return serviceSendRandomly;
     }
 
-    public void setServiceSendRandomly(String serviceSendRandomly) {
+    public String getServiceTopicName() {
+        return serviceTopicName;
+    }
+
+    public void setServiceSendRandomly(boolean serviceSendRandomly) {
         this.serviceSendRandomly = serviceSendRandomly;
     }
 
@@ -103,7 +109,7 @@ public class Configure {
     /**
      * Имя топика, ключа, сообщение, количество повторов
      */
-    private int repeatCont; //Количество сообщений
+    private int repeatCount; //Количество сообщений
     private String messageBody; //Тело сообщения
     private String key; //Ключ сообщения
     private String topicName; //Имя топика
@@ -167,12 +173,12 @@ public class Configure {
         this.randomizeLoad = randomizeLoad;
     }
 
-    public int getRepeatCont() {
-        return repeatCont;
+    public int getRepeatCount() {
+        return repeatCount;
     }
 
-    public void setRepeatCont(int repeatCont) {
-        this.repeatCont = repeatCont;
+    public void setRepeatCount(int repeatCount) {
+        this.repeatCount = repeatCount;
     }
 
     public String getMessageBody() {

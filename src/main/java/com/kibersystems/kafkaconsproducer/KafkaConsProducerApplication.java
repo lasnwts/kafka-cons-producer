@@ -1,5 +1,6 @@
 package com.kibersystems.kafkaconsproducer;
 
+import com.kibersystems.kafkaconsproducer.configure.Configure;
 import com.kibersystems.kafkaconsproducer.service.BaseProcess;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,15 +18,17 @@ public class KafkaConsProducerApplication implements CommandLineRunner {
 	private String appVersion;
 	@Value("${info.app.name:none}")
 	private String appName;
+	private final Configure configure;
 	private final BaseProcess baseProcess;
+
 	@Autowired
-	public KafkaConsProducerApplication(BaseProcess baseProcess) {
+	public KafkaConsProducerApplication(Configure configure, BaseProcess baseProcess) {
+		this.configure = configure;
 		this.baseProcess = baseProcess;
 	}
 	public static void main(String[] args) {
 		SpringApplication.run(KafkaConsProducerApplication.class, args);
 	}
-
 	@Override
 	public void run(String... args) throws Exception {
 		logger.info("+-----------------------------------------------------------------------------------------------------------+");
@@ -34,6 +37,9 @@ public class KafkaConsProducerApplication implements CommandLineRunner {
 		logger.info("| Application Name       :{}", appName);
 		logger.info("| Current version        :{}", appVersion);
 		logger.info("=------------------------------------------------------------------------------------------------------------=");
+		configure.setRepeatCount(configure.getServiceMessageCount());
+		configure.setKey(configure.getServiceMessageKey());
+		configure.setTopicName(configure.getServiceTopicName());
 		baseProcess.processSendMessage();
 	}
 }

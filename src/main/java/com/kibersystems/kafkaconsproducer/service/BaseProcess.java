@@ -44,18 +44,18 @@ public class BaseProcess {
             if (configure.getRepeatCount() <= files.size()) {
                 logger.info("Files count={} in directory:{} more than repeat message count:{}.", files.size(),
                         configure.getServiceCatalogMessages(), configure.getRepeatCount());
-                sendMessageCycle(prepareMessages, files.size());
+                sendMessageCycle(prepareMessages, configure.getRepeatCount(), files.size());
             } else {
                 logger.info("Files count={} in directory:{} fewer than repeat message count:{}.", files.size(),
                         configure.getServiceCatalogMessages(), configure.getRepeatCount());
                 int j = configure.getRepeatCount() / files.size();
                 for (int i = 0; i < j; i++) {
-                    sendMessageCycle(prepareMessages, files.size());
+                    sendMessageCycle(prepareMessages, files.size(), files.size());
                 }
-                sendMessageCycle(prepareMessages, configure.getRepeatCount() - (files.size() * j));
+                sendMessageCycle(prepareMessages, configure.getRepeatCount() - (files.size() * j), files.size());
             }
         }
-        while (configure.getThreads() >0 ){
+        while (configure.getThreads() > 0) {
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
@@ -73,12 +73,16 @@ public class BaseProcess {
      * @param prepareMessages - сообщение
      * @param cycleCount      - количество итераций
      */
-    private void sendMessageCycle(List<KafkaPrepareMessage> prepareMessages, int cycleCount) {
+    private void sendMessageCycle(List<KafkaPrepareMessage> prepareMessages, int cycleCount, int fileCount) {
         for (int i = 0; i < cycleCount; i++) {
-            executeService.getTask(prepareMessages.get(i));
+            if (configure.isRandomizeLoad()) {
+                int j = supports.getRandomIndex(0, fileCount - 1);
+                executeService.getTask(prepareMessages.get(j));
+            } else {
+                executeService.getTask(prepareMessages.get(i));
+            }
         }
     }
-
 
 
 }

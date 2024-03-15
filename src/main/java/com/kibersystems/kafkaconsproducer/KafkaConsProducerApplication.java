@@ -37,9 +37,14 @@ public class KafkaConsProducerApplication implements CommandLineRunner {
 		logger.info("| Application Name       :{}", appName);
 		logger.info("| Current version        :{}", appVersion);
 		logger.info("=------------------------------------------------------------------------------------------------------------=");
+
+		//Установка тестовых параметров
 		configure.setRepeatCount(configure.getServiceMessageCount());
 		configure.setKey(configure.getServiceMessageKey());
 		configure.setTopicName(configure.getServiceTopicName());
+		configure.setRandomizeLoad(configure.isServiceSendRandomly());
+
+		//Запускаем процесс
 		baseProcess.processSendMessage();
 	}
 }

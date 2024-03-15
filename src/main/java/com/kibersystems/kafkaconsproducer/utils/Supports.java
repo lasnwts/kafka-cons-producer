@@ -18,6 +18,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -154,4 +155,30 @@ public class Supports {
         byte[] encoded = Base64.encodeBase64(FileUtils.readFileToByteArray(file));
         return new String(encoded, StandardCharsets.US_ASCII);
     }
+
+    /**
+     * Замена GUID
+     *
+     * @return - готовый uuid
+     */
+    public String getUUID() {
+        return UUID.randomUUID().toString();
+    }
+
+    /**
+     * Возвращаем key
+     *
+     * @param keys - ключ
+     * @return - готовый вариант
+     */
+    public String getKey(String keys) {
+        if (keys == null || keys.trim().isEmpty() || configure.getKey().equalsIgnoreCase("uuid") || configure.getKey().equalsIgnoreCase("guid")) {
+            logger.info("UsbLog: Ключ externalID в объекте отсутствует! Вернем случайный UUID.");
+            return getUUID();
+        } else {
+            return keys.trim();
+        }
+    }
+
+
 }

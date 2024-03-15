@@ -44,30 +44,41 @@ public class BaseProcess {
             if (configure.getRepeatCount() <= files.size()) {
                 logger.info("Files count={} in directory:{} more than repeat message count:{}.", files.size(),
                         configure.getServiceCatalogMessages(), configure.getRepeatCount());
-                sendMessageCycle(prepareMessages,files.size());
+                sendMessageCycle(prepareMessages, files.size());
             } else {
                 logger.info("Files count={} in directory:{} fewer than repeat message count:{}.", files.size(),
                         configure.getServiceCatalogMessages(), configure.getRepeatCount());
-                int j = configure.getRepeatCount() % files.size();
-                for (int i = 0; i <= configure.getRepeatCount() % files.size(); i++){
-                    sendMessageCycle(prepareMessages,j);
+                int j = configure.getRepeatCount() / files.size();
+                for (int i = 0; i < j; i++) {
+                    sendMessageCycle(prepareMessages, files.size());
                 }
-                int k = files.size() * j - configure.getRepeatCount();
-                sendMessageCycle(prepareMessages,files.size() * j - configure.getRepeatCount());
+                sendMessageCycle(prepareMessages, configure.getRepeatCount() - (files.size() * j));
             }
         }
+        while (configure.getThreads() >0 ){
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                logger.error("Interrupted!", e);
+                /* Clean up whatever needs to be handled before interrupting  */
+                Thread.currentThread().interrupt();
+            }
+        }
+        executeService.serviceShutdown();
     }
 
     /**
-     * Отправка сообщений в Кафка когда число файлов больше чем число заданных сообщений
+     * Отправка сообщений в кафке когда число файлов больше чем число заданных сообщений
      *
      * @param prepareMessages - сообщение
-     * @param cycleCount - количество итераций
+     * @param cycleCount      - количество итераций
      */
     private void sendMessageCycle(List<KafkaPrepareMessage> prepareMessages, int cycleCount) {
-        for (int i = 0; i <= cycleCount; i++) {
+        for (int i = 0; i < cycleCount; i++) {
             executeService.getTask(prepareMessages.get(i));
         }
     }
+
+
 
 }

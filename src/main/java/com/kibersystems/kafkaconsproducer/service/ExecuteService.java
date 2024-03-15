@@ -2,6 +2,7 @@ package com.kibersystems.kafkaconsproducer.service;
 
 import com.kibersystems.kafkaconsproducer.configure.Configure;
 import com.kibersystems.kafkaconsproducer.model.KafkaPrepareMessage;
+import com.kibersystems.kafkaconsproducer.utils.Supports;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,10 +20,13 @@ public class ExecuteService {
     Logger logger = LoggerFactory.getLogger(ExecuteService.class);
     private final Configure configure;
     private final KafkaProducerService kafkaProducerService;
+    private final Supports supports;
+
     @Autowired
-    public ExecuteService(Configure configure, KafkaProducerService kafkaProducerService) {
+    public ExecuteService(Configure configure, KafkaProducerService kafkaProducerService, Supports supports) {
         this.configure = configure;
         this.kafkaProducerService = kafkaProducerService;
+        this.supports = supports;
     }
 
     /**
@@ -44,6 +48,15 @@ public class ExecuteService {
             return false;
         }
     }
+
+
+    /**
+     * Закрытие пула
+     */
+    public void serviceShutdown(){
+        executorService.shutdown();
+    }
+
 
     /**
      * Пул потоков
@@ -76,7 +89,7 @@ public class ExecuteService {
 
         public void run() {
             logger.info("Запуск потока id={}", Thread.currentThread().getId());
-            if (kafkaProducerService.sendMessage(kafkaMessage.getTopicName(), kafkaMessage.getKey(), kafkaMessage.getMessage())) {
+            if (kafkaProducerService.sendMessage(kafkaMessage.getTopicName(), supports.getKey(kafkaMessage.getKey()), kafkaMessage.getMessage())) {
                 logger.info("Номер потока={},  сообщение отправлено:{}", Thread.currentThread().getId(), kafkaMessage);
             } else {
                 logger.error("Error: Ошибка: Номер потока={}, сообщение НЕ отправлено:{}", Thread.currentThread().getId(), kafkaMessage);

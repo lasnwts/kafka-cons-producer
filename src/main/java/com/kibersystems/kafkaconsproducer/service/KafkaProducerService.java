@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 public class KafkaProducerService {
     Logger logger = LoggerFactory.getLogger(KafkaProducerService.class);
     private final KafkaTemplate<String, String> kafkaTemplate;
+    private String mesLog = null;
 
     @Autowired
     public KafkaProducerService(KafkaTemplate<String, String> kafkaTemplate) {
@@ -27,13 +28,15 @@ public class KafkaProducerService {
      */
     public boolean sendMessage(String topic, String msg) {
         try {
-            logger.info("Send prepare.Topic={}; Send message={}", topic, msg);
+            logger.info("Send prepare.Topic={};", topic);
+            mesLog = getMessageToLog(msg);
+            logger.info("Send message={}", mesLog);
             kafkaTemplate.send(topic, msg);
             return true;
         } catch (Exception exception) {
             logger.error("UsbLog:!!!!!!!!!!!!!!!!!<ERROR send message>!!!!!!!!!!!!!!!!!!!!!!");
             logger.error("UsbLog:Error:send failure:topic:{}", topic);
-            logger.error("UsbLog:Error:send failure:message:{}", msg);
+            logger.error("UsbLog:Error:send failure:message:{}", getMessageToLog(msg));
             logger.error("UsbLog:Execution:", exception);
             logger.error("UsbLog:!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
             return false;
@@ -48,17 +51,33 @@ public class KafkaProducerService {
      */
     public boolean sendMessage(String topic, String key, String msg) {
         try {
-            logger.info("Send prepare.Topic={}; Send message={}", topic, msg);
+            mesLog = getMessageToLog(msg);
+            logger.info("Send prepare.Topic={}; Send message={}", topic, mesLog);
             kafkaTemplate.send(topic, key, msg);
             return true;
         } catch (Exception exception) {
             logger.error("UsbLog:!!!!!!!!!!!!!!!!!<ERROR send message>!!!!!!!!!!!!!!!!!!!!!!");
             logger.error("UsbLog:Error:send failure:topic:{}; key:{}", topic, key);
-            logger.error("UsbLog:Error:send failure:message:{}", msg);
+            logger.error("UsbLog:Error:send failure:message:{}", getMessageToLog(msg));
             logger.error("UsbLog:Execution:", exception);
             logger.error("UsbLog:!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
             return false;
         }
+    }
+
+    /**
+     * Получаем укороченное сообщение для лога
+     * @param msg - тело сообщения в кафка
+     * @return - возврат сообщегния для лога
+     */
+    private String getMessageToLog(String msg){
+        if (msg == null){
+            return "";
+        }
+        if (msg.length() > 20){
+            return msg.trim().substring(0,19);
+        }
+        return msg;
     }
 
 }
